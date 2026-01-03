@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My YouTube Viewer - Khayaal</title>
+  <title>GitHub YouTube Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
@@ -47,8 +47,7 @@
       position: relative;
       width: 100%;
       max-width: 800px;
-      /* 16:9 aspect ratio */
-      padding-top: 56.25%;
+      padding-top: 56.25%; /* 16:9 */
       background: #000;
       border-radius: 8px;
       overflow: hidden;
@@ -68,15 +67,6 @@
       color: #9ca3af;
       text-align: center;
       max-width: 700px;
-    }
-
-    a {
-      color: #60a5fa;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
     }
 
     .input-box {
@@ -113,15 +103,15 @@
 </head>
 <body>
   <header>
-    <h1>YouTube in GitHub URL (Khayaal)</h1>
+    <h1>YouTube in GitHub URL</h1>
   </header>
 
   <main>
     <div class="player-container">
-      <!-- Default video: Khayaal (JFUoE0ArWd4) -->
+      <!-- Default video: Call Aundi (OIv0FLrbnGE) -->
       <iframe
         id="ytPlayer"
-        src="https://www.youtube.com/embed/JFUoE0ArWd4"
+        src="https://www.youtube.com/embed/OIv0FLrbnGE"
         title="YouTube video player"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen>
@@ -134,7 +124,7 @@
 
     <div class="input-box">
       <p class="info">
-        To play any other YouTube video, paste the full YouTube link or just the video ID below and click <strong>Load Video</strong>.
+        To change the video, paste any YouTube link (or just the video ID) below and click <strong>Load Video</strong>.
       </p>
       <input id="ytInput" type="text" placeholder="Paste YouTube link or ID here">
       <button onclick="changeVideo()">Load Video</button>
@@ -143,9 +133,11 @@
 
   <script>
     function getVideoId(url) {
+      if (!url) return null;
       url = url.trim();
+
       // If user pasted only the ID
-      if (url.length === 11 && !url.includes('http')) {
+      if (!url.startsWith('http') && url.length >= 8 && url.length <= 20) {
         return url;
       }
 
@@ -171,11 +163,4 @@
       const id = getVideoId(input);
       if (!id) {
         alert('Please paste a valid YouTube link or video ID.');
-        return;
-      }
-      const iframe = document.getElementById('ytPlayer');
-      iframe.src = 'https://www.youtube.com/embed/' + id;
-    }
-  </script>
-</body>
-</html>
+        re
