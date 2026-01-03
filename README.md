@@ -89,7 +89,7 @@
     <div class="player-container">
       <!-- CHANGE ONLY THE VIDEO_ID PART BELOW -->
       <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID"
+        src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=JFUoE0ArWd4&list=RDs0bJkT5EyTc&index=5"
         title="YouTube video player"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen>
