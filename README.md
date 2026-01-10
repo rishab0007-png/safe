@@ -1,200 +1,192 @@
 <!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>index.html</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="index.html" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="https://rishab0007-png.github.io/index.html/" />
+<meta property="og:url" content="https://rishab0007-png.github.io/index.html/" />
+<meta property="og:site_name" content="index.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="index.html" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","headline":"index.html","name":"index.html","url":"https://rishab0007-png.github.io/index.html/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/index.html/assets/css/style.css?v=7b8847ef101178228f8ce5b2fed8742dfa1e303d">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/index.html/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://rishab0007-png.github.io/index.html/">index.html</a></h1>
+      
+
+      <p>&lt;!DOCTYPE html&gt;</p>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Pacman on GitHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-    body {
-      margin: 0;
-      background: #020617;
-      color: #e5e7eb;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    header {
-      width: 100%;
-      text-align: center;
-      padding: 12px;
-      background: #0f172a;
-      border-bottom: 1px solid #1f2937;
-    }
-    main {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    #gameCanvas {
-      background: #000;
-      border: 2px solid #22c55e;
-      border-radius: 8px;
-      display: block;
-    }
-    .info {
-      font-size: 14px;
-      text-align: center;
-      max-width: 400px;
-      color: #9ca3af;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Connect with Me</title>
+<style>
+body {
+margin: 0;
+height: 100vh;
+background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+overflow: hidden;
+font-family: Arial, sans-serif;
+display: flex;
+justify-content: center;
+align-items: center;
+position: relative;
+}
+.container {
+background-color: rgba(40, 40, 40, 0.8);
+padding: 32px 18px;
+border-radius: 22px;
+text-align: center;
+box-shadow: 0 0 18px rgba(0, 0, 0, 0.48);
+width: 97vw;
+max-width: 480px;
+z-index: 10;
+box-sizing: border-box;
+}
+h1 {
+color: white;
+font-weight: 500;
+font-size: 1.7rem;
+margin-bottom: 28px;
+letter-spacing: 1.3px;
+}
+.icon-row {
+display: flex;
+flex-direction: row;
+gap: 38px;
+justify-content: center;
+align-items: center;
+margin-top: 18px;
+}
+a {
+color: white;
+text-decoration: none;
+}
+img.social-icon {
+width: 82px;
+height: 82px;
+transition: transform 0.3s, box-shadow 0.3s;
+filter: drop-shadow(0 0 15px #2ba84a);
+box-shadow: 0 0 22px #fff, 0 0 12px #aaa;
+border-radius: 25%;
+}
+a[aria-label="Instagram"] img.social-icon {
+filter: drop-shadow(0 0 15px #e1306c);
+box-shadow: 0 0 30px #e1306c60, 0 0 12px #fff;
+}
+a[aria-label="Telegram"] img.social-icon {
+filter: drop-shadow(0 0 15px #0088cc);
+box-shadow: 0 0 30px #0088cc60, 0 0 12px #fff;
+}
+img.social-icon:active, img.social-icon:hover {
+transform: scale(1.22) rotate(-6deg);
+opacity: 0.95;
+box-shadow: 0 0 32px #fff, 0 0 24px #aaa;
+}
+.snowflake {
+position: absolute;
+top: -18px;
+width: 14px;
+height: 14px;
+background: white;
+border-radius: 60%;
+opacity: 0.67;
+animation: fall linear infinite;
+z-index: 1;
+filter: blur(1px);
+}
+@keyframes fall {
+100% {
+transform: translateY(100vh);
+opacity: 0.07;
+}
+}
+@media only screen and (max-width: 480px) {
+.container {
+max-width: 100vw !important;
+width: 98vw !important;
+padding: 40px 6vw !important;
+border-radius: 14px;
+box-sizing: border-box;
+}
+h1 {
+font-size: 1.6rem;
+margin-bottom: 32px;
+}
+img.social-icon {
+width: 110px;
+height: 110px;
+}
+.icon-row {
+gap: 36px;
+}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Mini Pacman (Arrow Keys)</h1>
-  </header>
-
-  <main>
-    <canvas id="gameCanvas" width="480" height="320"></canvas>
-    <p class="info">
-      Use <strong>Arrow keys</strong> to move the yellow Pac‑Man and eat all the white dots.
-    </p>
-  </main>
-
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    const tileSize = 24;
-    const cols = Math.floor(canvas.width / tileSize);
-    const rows = Math.floor(canvas.height / tileSize);
-
-    // Simple map: 0 = empty, 1 = dot
-    const map = [];
-    for (let y = 0; y < rows; y++) {
-      map[y] = [];
-      for (let x = 0; x < cols; x++) {
-        // Put dots everywhere except outer border
-        if (x === 0 || y === 0 || x === cols - 1 || y === rows - 1) {
-          map[y][x] = 0;
-        } else {
-          map[y][x] = 1;
-        }
-      }
-    }
-
-    const pacman = {
-      x: 2,
-      y: 2,
-      dirX: 1,
-      dirY: 0,
-      speed: 0.12, // tiles per frame
-      offsetX: 0,
-      offsetY: 0,
-      mouthAngle: 0.3,
-    };
-
-    let lastTime = 0;
-
-    function drawMap() {
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#fff';
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          if (map[y][x] === 1) {
-            const cx = x * tileSize + tileSize / 2;
-            const cy = y * tileSize + tileSize / 2;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-      }
-    }
-
-    function drawPacman() {
-      const centerX = (pacman.x + pacman.offsetX) * tileSize + tileSize / 2;
-      const centerY = (pacman.y + pacman.offsetY) * tileSize + tileSize / 2;
-      const radius = tileSize / 2 - 2;
-
-      // Determine facing angle
-      let angle = 0;
-      if (pacman.dirX === 1) angle = 0;
-      else if (pacman.dirX === -1) angle = Math.PI;
-      else if (pacman.dirY === -1) angle = -Math.PI / 2;
-      else if (pacman.dirY === 1) angle = Math.PI / 2;
-
-      const open = pacman.mouthAngle;
-
-      ctx.fillStyle = '#facc15';
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, angle + open, angle + Math.PI * 2 - open);
-      ctx.closePath();
-      ctx.fill();
-
-      // Eye
-      ctx.fillStyle = '#000';
-      const eyeX = centerX + Math.cos(angle - Math.PI / 2) * (radius / 2);
-      const eyeY = centerY + Math.sin(angle - Math.PI / 2) * (radius / 2);
-      ctx.beginPath();
-      ctx.arc(eyeX, eyeY, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function update(delta) {
-      // Animate mouth
-      pacman.mouthAngle = 0.2 + 0.1 * Math.sin(performance.now() / 100);
-
-      const move = pacman.speed * delta;
-      pacman.offsetX += pacman.dirX * move;
-      pacman.offsetY += pacman.dirY * move;
-
-      // When offset reaches 1 tile, snap to grid
-      if (pacman.offsetX >= 1 || pacman.offsetX <= -1 || pacman.offsetY >= 1 || pacman.offsetY <= -1) {
-        pacman.x += Math.round(pacman.offsetX);
-        pacman.y += Math.round(pacman.offsetY);
-        pacman.offsetX = 0;
-        pacman.offsetY = 0;
-
-        // Eat dot on tile
-        if (map[pacman.y] && map[pacman.y][pacman.x] === 1) {
-          map[pacman.y][pacman.x] = 0;
-        }
-
-        // Stay inside bounds
-        if (pacman.x < 1) pacman.x = 1;
-        if (pacman.y < 1) pacman.y = 1;
-        if (pacman.x > cols - 2) pacman.x = cols - 2;
-        if (pacman.y > rows - 2) pacman.y = rows - 2;
-      }
-    }
-
-    function gameLoop(timestamp) {
-      const delta = timestamp - lastTime;
-      lastTime = timestamp;
-
-      update(delta);
-      drawMap();
-      drawPacman();
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    // Controls
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        pacman.dirX = -1; pacman.dirY = 0;
-      } else if (e.key === 'ArrowRight') {
-        pacman.dirX = 1; pacman.dirY = 0;
-      } else if (e.key === 'ArrowUp') {
-        pacman.dirX = 0; pacman.dirY = -1;
-      } else if (e.key === 'ArrowDown') {
-        pacman.dirX = 0; pacman.dirY = 1;
-      }
-    });
-
-    // Start
-    drawMap();
-    drawPacman();
-    requestAnimationFrame(gameLoop);
-  </script>
+<script>
+const snowflakeCount = 100;
+for (let i = 0; i < snowflakeCount; i++) {
+const snowflake = document.createElement("div");
+snowflake.classList.add("snowflake");
+const size = Math.random() * 10 + 10; // 10px to 20px
+const left = Math.random() * window.innerWidth;
+const duration = Math.random() * 6 + 8;
+const delay = Math.random() * 12;
+snowflake.style.width = `${size}px`;
+snowflake.style.height = `${size}px`;
+snowflake.style.left = `${left}px`;
+snowflake.style.animationDuration = `${duration}s`;
+snowflake.style.animationDelay = `${delay}s`;
+document.body.appendChild(snowflake);
+}
+</script>
+<div class="container">
+<h1>Connect with Me</h1>
+<div class="icon-row">
+<a href="https://wa.me/9897978494" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="social-icon" />
+</a>
+<a href="https://www.instagram.com/rishab_gautam__007" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" class="social-icon" />
+</a>
+<a href="https://t.me/+919897978494" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" class="social-icon" />
+</a>
+</div>
+</div>
 </body>
+</html>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
 </html>
