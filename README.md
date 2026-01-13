@@ -109,4 +109,59 @@
 
     function updateUI() {
         questions.forEach(q => q.classList.remove('active'));
-        document.querySelector(`.question[data-
+        document.querySelector(`.question[data-step="${currentStep}"]`).classList.add('active');
+        document.getElementById('stepText').innerText = `Step ${currentStep} of ${totalSteps}`;
+        prevBtn.classList.toggle('hidden', currentStep === 1);
+        nextBtn.innerText = currentStep === totalSteps ? "Finish" : "Next Step";
+    }
+
+    function showResult() {
+        document.getElementById('quiz-container').classList.add('hidden');
+        document.getElementById('result').classList.remove('hidden');
+        
+        const q1 = document.querySelector('input[name="q1"]:checked').value;
+        const q2 = document.querySelector('input[name="q2"]:checked').value;
+        const q3 = document.querySelector('input[name="q3"]:checked').value;
+
+        let recommendation = "";
+
+        // JANUARY 2026 LOGIC ENGINE
+        if (q3 === "macos") {
+            recommendation = `
+                <div class="product-card">
+                    <p class="product-code">Article: MW123HN/A</p>
+                    <h3>Apple MacBook Air M4 (2026 Model)</h3>
+                    <p>16GB RAM | 256GB SSD | macOS Sequoia</p>
+                    <p class="price-tag">Sale Price: ₹92,900</p>
+                </div>`;
+        } else if (q1 === "gaming") {
+            recommendation = `
+                <div class="product-card">
+                    <p class="product-code">Article: FX607VB-RL087WS</p>
+                    <h3>ASUS TUF Gaming F16</h3>
+                    <p>Intel Core i7-14th Gen | RTX 4050 | 16GB RAM</p>
+                    <p class="price-tag">Sale Price: ₹73,990</p>
+                </div>`;
+        } else if (q2 === "low") {
+            recommendation = `
+                <div class="product-card">
+                    <p class="product-code">Article: 83K100CPIN</p>
+                    <h3>Lenovo IdeaPad Slim 3</h3>
+                    <p>Intel Core i3-12th Gen | 8GB RAM | 512GB SSD</p>
+                    <p class="price-tag">Sale Price: ₹34,490</p>
+                </div>`;
+        } else {
+            recommendation = `
+                <div class="product-card">
+                    <p class="product-code">Article: 15-fd1099TU</p>
+                    <h3>HP Laptop 15s</h3>
+                    <p>Intel Core Ultra 5 | 16GB RAM | 512GB SSD</p>
+                    <p class="price-tag">Sale Price: ₹67,990</p>
+                </div>`;
+        }
+
+        document.getElementById('recommendation-output').innerHTML = recommendation;
+    }
+</script>
+</body>
+</html>
