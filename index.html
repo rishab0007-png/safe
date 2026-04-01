@@ -1,167 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Smart Laptop Helper - Reliance Digital 2026</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Notes Panel</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
     <style>
-        /* [Keeping your original CSS styles for the beautiful UI] */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* --- GLOBAL STYLES --- */
+        :root {
+            --on: 0; 
+            --bg-dark: #121417;
+            --bg-light: #1c1f24;
+            --primary: #d4af37; /* Gold accent */
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f0f0f0;
+            --text-muted: #888;
+        }
+
         body {
-            font-family: Arial, system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            color: #f5f5f5;
-            background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+            margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            height: 100vh; overflow-x: hidden;
         }
-        .container { width: 100%; max-width: 900px; padding: 24px 16px; margin: 0 auto; }
-        .assistant-card {
-            position: relative; border-radius: 28px; padding: 32px; margin: 40px auto;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.40), rgba(30, 64, 175, 0.22));
-            border: 1px solid rgba(148, 163, 184, 0.55);
-            backdrop-filter: blur(24px);
-            box-shadow: 0 26px 70px rgba(15, 23, 42, 0.95);
+
+        button { cursor: pointer; border: none; outline: none; transition: 0.2s; }
+        input, textarea { outline: none; font-family: inherit; }
+
+        /* =========================================
+           SECTION 1: AUTHENTICATION VIEW (Lamp & Login)
+           ========================================= */
+        #auth-view {
+            width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;
+            position: absolute; top: 0; left: 0;
         }
-        .question { display: none; transform: translateY(18px); transition: 0.4s; }
-        .question.active { display: block; transform: translateY(0); }
-        .option-label {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-            padding: 12px; border-radius: 12px; background: rgba(15,23,42,0.6);
-            border: 1px solid rgba(148,163,184,0.3); cursor: pointer;
+
+        /* --- LAMP STRUCTURE --- */
+        .lamp-container { position: absolute; left: 20%; top: 25%; display: flex; flex-direction: column; align-items: center; z-index: 10; }
+        .lamp-head { width: 120px; height: 60px; background: #e0e0e0; border-radius: 60px 60px 0 0; box-shadow: inset 0 -5px 15px rgba(0,0,0,0.2); position: relative; z-index: 5; }
+        .lamp-stand { width: 8px; height: 100px; background: #666; z-index: 1; }
+        .lamp-base { width: 60px; height: 12px; background: #e0e0e0; border-radius: 10px 10px 0 0; }
+        #physics-canvas { position: absolute; top: 55px; left: 70px; width: 150px; height: 300px; z-index: 15; }
+
+        .light-beam {
+            position: absolute; top: 60px; width: 400px; height: 500px;
+            background: linear-gradient(to bottom, rgba(255, 255, 220, 0.35), transparent);
+            clip-path: polygon(35% 0, 65% 0, 100% 100%, 0 100%);
+            opacity: var(--on); transition: opacity 0.3s ease; pointer-events: none; z-index: 2;
         }
-        .option-label:hover { border-color: #38bdf8; background: rgba(15,23,42,0.8); }
-        .nav-row { margin-top: 20px; display: flex; justify-content: space-between; }
-        .btn-primary { background: #38bdf8; color: #020617; padding: 10px 25px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-secondary { background: transparent; color: white; border: 1px solid white; padding: 10px 20px; border-radius: 20px; cursor: pointer; }
-        #result { margin-top: 20px; padding: 20px; border-radius: 18px; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; }
-        .hidden { display: none; }
-        .product-card { background: #0f172a; padding: 15px; border-radius: 12px; margin-top: 10px; border-left: 4px solid #38bdf8; }
-        .price-tag { color: #22c55e; font-weight: bold; font-size: 1.2rem; }
+
+        /* --- LOGIN BOX (Hidden until lamp is pulled) --- */
+        .auth-box {
+            position: relative; background: var(--panel-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 40px; border-radius: 15px; width: 320px; border: 1px solid var(--panel-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-left: 15%; 
+            opacity: 0; transform: translateY(20px); visibility: hidden; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5;
+        }
+        .auth-box.active { opacity: 1; transform: translateY(0); visibility: visible; }
+
+        .auth-box h2 { text-align: center; margin-top: 0; color: var(--primary); }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-muted); }
+        .input-group input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 6px; color: white; box-sizing: border-box; }
+        .input-group input:focus { border-color: var(--primary); }
+        
+        .auth-btn { width: 100%; padding: 12px; background: var(--primary); color: #000; font-weight: bold; border-radius: 6px; font-size: 16px; margin-top: 10px;}
+        .auth-btn:hover { background: #ebd169; }
+        
+        .toggle-auth { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+        .toggle-auth:hover { color: var(--text-main); text-decoration: underline; }
+        #auth-msg { text-align: center; margin-top: 10px; font-size: 14px; color: #ff6b6b; min-height: 20px; }
+
+
+        /* =========================================
+           SECTION 2: DASHBOARD VIEW (Notes)
+           ========================================= */
+        #dashboard-view { display: none; padding: 30px; max-width: 1200px; margin: 0 auto; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header-actions { display: flex; gap: 15px; }
+        
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 6px; }
+        .btn-outline:hover { background: rgba(212, 175, 55, 0.1); }
+        
+        .btn-fill { background: var(--primary); color: #000; padding: 8px 16px; border-radius: 6px; font-weight: bold; }
+        .btn-fill:hover { background: #ebd169; }
+
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+        .note-tile {
+            background: #1a1d24; border-radius: 10px; padding: 20px; cursor: pointer;
+            border-left: 5px solid var(--primary); transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; flex-direction: column; min-height: 150px; border: 1px solid #2a2e38;
+            border-left-width: 5px;
+        }
+        .note-tile:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        .note-title { font-size: 18px; font-weight: bold; margin: 0 0 10px 0; }
+        .note-preview { color: #bbb; font-size: 14px; flex-grow: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; line-height: 1.5;}
+        .note-date { font-size: 11px; color: var(--text-muted); margin-top: 15px; text-align: right; }
+
+        /* =========================================
+           SECTION 3: MODAL (Add/Edit Note)
+           ========================================= */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 100;
+        }
+
+        .modal-content {
+            background: #1c1f26; width: 90%; max-width: 600px; border-radius: 12px;
+            padding: 30px; border: 1px solid #333; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        #modal-title { background: transparent; border: none; border-bottom: 1px solid #444; color: white; font-size: 22px; padding: 10px 0; font-weight: bold; }
+        #modal-body { background: #121417; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; height: 250px; resize: none; font-size: 15px; line-height: 1.6; }
+        
+        .color-picker { display: flex; gap: 10px; margin-bottom: 10px; }
+        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .color-dot.active { border-color: white; transform: scale(1.1); }
+
+        .modal-actions { display: flex; justify-content: space-between; margin-top: 10px; }
+        .modal-right-btns { display: flex; gap: 10px; }
+        .btn-danger { background: transparent; border: 1px solid #ff6b6b; color: #ff6b6b; padding: 8px 16px; border-radius: 6px; }
+        .btn-danger:hover { background: rgba(255, 107, 107, 0.1); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="assistant-card">
-        <div id="quiz-container">
-            <h2 id="stepText">Step 1 of 10</h2>
-            <form id="quizForm">
-                <div class="question active" data-step="1">
-                    <h3>What is your primary use?</h3>
-                    <label class="option-label"><input type="radio" name="q1" value="basic" required> Browsing & Movies</label>
-                    <label class="option-label"><input type="radio" name="q1" value="office"> Office / Student Work</label>
-                    <label class="option-label"><input type="radio" name="q1" value="gaming"> Gaming / Pro Editing</label>
-                </div>
-
-                <div class="question" data-step="2">
-                    <h3>What is your budget?</h3>
-                    <label class="option-label"><input type="radio" name="q2" value="low"> Below ₹40,000</label>
-                    <label class="option-label"><input type="radio" name="q2" value="mid"> ₹40,000 - ₹70,000</label>
-                    <label class="option-label"><input type="radio" name="q2" value="high"> Above ₹70,000</label>
-                </div>
-
-                <div class="question" data-step="3"><h3>Preferred OS?</h3>
-                    <label class="option-label"><input type="radio" name="q3" value="windows"> Windows</label>
-                    <label class="option-label"><input type="radio" name="q3" value="macos"> macOS (Apple)</label>
-                </div>
-            </form>
-
-            <div class="nav-row">
-                <button type="button" class="btn-secondary hidden" id="prevBtn">Previous</button>
-                <button type="button" class="btn-primary" id="nextBtn">Next Step</button>
-            </div>
+    <div id="auth-view">
+        
+        <div class="lamp-container">
+            <div class="lamp-head"></div>
+            <div id="physics-canvas"></div> 
+            <div class="lamp-stand"></div>
+            <div class="lamp-base"></div>
+            <div class="light-beam"></div>
         </div>
 
-        <div id="result" class="hidden">
-            <h2>Recommended for You (Jan 2026)</h2>
-            <div id="recommendation-output"></div>
-            <button class="btn-primary" onclick="location.reload()" style="margin-top:20px">Start Over</button>
+        <div class="auth-box" id="auth-box">
+            <h2 id="auth-title">Sign In</h2>
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <button class="auth-btn" id="auth-btn">Sign In</button>
+            <div id="auth-msg"></div>
+            <div class="toggle-auth" id="toggle-auth">Need an account? Sign Up here</div>
         </div>
     </div>
-</div>
 
-<script>
-    const totalSteps = 3; // Simplified for demo, can be 10
-    let currentStep = 1;
-
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const questions = document.querySelectorAll('.question');
-
-    nextBtn.onclick = () => {
-        const currentQ = document.querySelector(`.question[data-step="${currentStep}"]`);
-        const selected = currentQ.querySelector('input:checked');
+    <div id="dashboard-view">
+        <div class="header">
+            <h1>Welcome, <span id="display-user" style="color: var(--primary);">User</span></h1>
+            <div class="header-actions">
+                <button class="btn-outline" id="logout-btn">Log Out</button>
+                <button class="btn-fill" id="new-note-btn">+ Add Note</button>
+            </div>
+        </div>
         
-        if (!selected) return alert("Please select an option!");
+        <div class="notes-grid" id="notes-grid">
+            </div>
+    </div>
 
-        if (currentStep < totalSteps) {
-            currentStep++;
-            updateUI();
-        } else {
-            showResult();
+    <div class="modal-overlay" id="note-modal">
+        <div class="modal-content">
+            <input type="text" id="modal-title" placeholder="Note Heading...">
+            
+            <div class="color-picker" id="color-picker">
+                <div class="color-dot active" style="background: #d4af37;" data-color="#d4af37"></div>
+                <div class="color-dot" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+                <div class="color-dot" style="background: #4dabf7;" data-color="#4dabf7"></div>
+                <div class="color-dot" style="background: #51cf66;" data-color="#51cf66"></div>
+                <div class="color-dot" style="background: #cc5de8;" data-color="#cc5de8"></div>
+            </div>
+
+            <textarea id="modal-body" placeholder="Write your note here..."></textarea>
+            
+            <div class="modal-actions">
+                <button class="btn-danger" id="delete-note-btn" style="display: none;">Delete</button>
+                <div style="flex-grow: 1;"></div> 
+                <div class="modal-right-btns">
+                    <button class="btn-outline" id="close-modal-btn" style="color: white; border-color: #555;">Cancel</button>
+                    <button class="btn-fill" id="save-note-btn">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. MATTER.JS PHYSICS LAMP SETUP
+        // ==========================================
+        let isOn = false;
+        const root = document.documentElement;
+        const authBox = document.getElementById('auth-box');
+
+        function toggleLight() {
+            isOn = !isOn; 
+            root.style.setProperty("--on", isOn ? 1 : 0);
+
+            if (isOn) {
+                authBox.classList.add("active");
+                gsap.to("body", { backgroundColor: "#1c1f24", duration: 0.6 });
+            } else {
+                authBox.classList.remove("active");
+                gsap.to("body", { backgroundColor: "#121417", duration: 0.6 });
+                document.getElementById('auth-msg').innerText = ""; // Clear errors
+            }
         }
-    };
 
-    prevBtn.onclick = () => {
-        if (currentStep > 1) {
-            currentStep--;
-            updateUI();
-        }
-    };
+        const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Composites = Matter.Composites,
+              MouseConstraint = Matter.MouseConstraint, Mouse = Matter.Mouse, Composite = Matter.Composite,
+              Constraint = Matter.Constraint, Bodies = Matter.Bodies, Events = Matter.Events;
 
-    function updateUI() {
-        questions.forEach(q => q.classList.remove('active'));
-        document.querySelector(`.question[data-step="${currentStep}"]`).classList.add('active');
-        document.getElementById('stepText').innerText = `Step ${currentStep} of ${totalSteps}`;
-        prevBtn.classList.toggle('hidden', currentStep === 1);
-        nextBtn.innerText = currentStep === totalSteps ? "Finish" : "Next Step";
-    }
+        const engine = Engine.create();
+        const world = engine.world;
+        const canvasContainer = document.getElementById('physics-canvas');
 
-    function showResult() {
-        document.getElementById('quiz-container').classList.add('hidden');
-        document.getElementById('result').classList.remove('hidden');
+        const render = Render.create({
+            element: canvasContainer, engine: engine,
+            options: { width: 150, height: 300, wireframes: false, background: 'transparent' }
+        });
+
+        Render.run(render); Runner.run(Runner.create(), engine);
+
+        const group = Matter.Body.nextGroup(true);
+        const ropeLength = 8; 
         
-        const q1 = document.querySelector('input[name="q1"]:checked').value;
-        const q2 = document.querySelector('input[name="q2"]:checked').value;
-        const q3 = document.querySelector('input[name="q3"]:checked').value;
+        const rope = Composites.stack(30, 0, 1, ropeLength, 0, 4, function(x, y) {
+            return Bodies.circle(x, y, 3, { collisionFilter: { group: group }, render: { fillStyle: '#888888' }, density: 0.05 });
+        });
 
-        let recommendation = "";
+        Composites.chain(rope, 0, 0.5, 0, -0.5, { stiffness: 1, length: 2, render: { visible: false } });
+        Composite.add(rope, Constraint.create({ bodyA: rope.bodies[0], pointB: { x: 30, y: 0 }, pointA: { x: 0, y: 0 }, stiffness: 1, render: { visible: false } }));
 
-        // JANUARY 2026 LOGIC ENGINE
-        if (q3 === "macos") {
-            recommendation = `
-                <div class="product-card">
-                    <p class="product-code">Article: MW123HN/A</p>
-                    <h3>Apple MacBook Air M4 (2026 Model)</h3>
-                    <p>16GB RAM | 256GB SSD | macOS Sequoia</p>
-                    <p class="price-tag">Sale Price: ₹92,900</p>
-                </div>`;
-        } else if (q1 === "gaming") {
-            recommendation = `
-                <div class="product-card">
-                    <p class="product-code">Article: FX607VB-RL087WS</p>
-                    <h3>ASUS TUF Gaming F16</h3>
-                    <p>Intel Core i7-14th Gen | RTX 4050 | 16GB RAM</p>
-                    <p class="price-tag">Sale Price: ₹73,990</p>
-                </div>`;
-        } else if (q2 === "low") {
-            recommendation = `
-                <div class="product-card">
-                    <p class="product-code">Article: 83K100CPIN</p>
-                    <h3>Lenovo IdeaPad Slim 3</h3>
-                    <p>Intel Core i3-12th Gen | 8GB RAM | 512GB SSD</p>
-                    <p class="price-tag">Sale Price: ₹34,490</p>
-                </div>`;
-        } else {
-            recommendation = `
-                <div class="product-card">
-                    <p class="product-code">Article: 15-fd1099TU</p>
-                    <h3>HP Laptop 15s</h3>
-                    <p>Intel Core Ultra 5 | 16GB RAM | 512GB SSD</p>
-                    <p class="price-tag">Sale Price: ₹67,990</p>
-                </div>`;
+        const handleWidth = 14; const handleHeight = 28;
+        const handle = Bodies.rectangle(30, ropeLength * 15, handleWidth, handleHeight, {
+            chamfer: { radius: 5 }, render: { fillStyle: '#d4af37' }, density: 0.2, frictionAir: 0.05
+        });
+
+        Composite.add(world, Constraint.create({ bodyA: rope.bodies[ropeLength - 1], bodyB: handle, pointA: { x: 0, y: 3 }, pointB: { x: 0, y: -10 }, stiffness: 1, render: { visible: false } }));
+        Composite.add(world, [rope, handle]);
+
+        const mouse = Mouse.create(render.canvas);
+        const mouseConstraint = MouseConstraint.create(engine, { mouse: mouse, constraint: { stiffness: 0.2, render: { visible: false } } });
+        
+        mouseConstraint.mouse.element.removeEventListener("mousewheel", mouseConstraint.mouse.mousewheel);
+        mouseConstraint.mouse.element.removeEventListener("DOMMouseScroll", mouseConstraint.mouse.mousewheel);
+        
+        Composite.add(world, mouseConstraint); render.mouse = mouse; 
+
+        let restingY = handle.position.y;
+        let isPulled = false;
+
+        Events.on(engine, 'beforeUpdate', function() {
+            if (handle.position.y > restingY + 25 && !isPulled) {
+                isPulled = true; toggleLight(); 
+            } else if (handle.position.y < restingY + 10 && isPulled) {
+                isPulled = false;
+            }
+        });
+
+
+        // ==========================================
+        // 2. STATE & LOCAL STORAGE SETUP
+        // ==========================================
+        let isLoginMode = true;
+        let currentUser = null;
+        let notes = [];
+        let editingNoteId = null; 
+        let selectedColor = "#d4af37";
+
+        if (!localStorage.getItem('usersDB')) localStorage.setItem('usersDB', JSON.stringify({}));
+        if (!localStorage.getItem('notesDB')) localStorage.setItem('notesDB', JSON.stringify({}));
+
+        // ==========================================
+        // 3. AUTHENTICATION LOGIC (Login / Sign up)
+        // ==========================================
+        const authView = document.getElementById('auth-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const authTitle = document.getElementById('auth-title');
+        const authBtn = document.getElementById('auth-btn');
+        const toggleAuthBtn = document.getElementById('toggle-auth');
+        const authMsg = document.getElementById('auth-msg');
+        
+        toggleAuthBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            authTitle.innerText = isLoginMode ? "Sign In" : "Sign Up";
+            authBtn.innerText = isLoginMode ? "Sign In" : "Create Account";
+            toggleAuthBtn.innerText = isLoginMode ? "Need an account? Sign Up here" : "Already have an account? Sign In";
+            authMsg.innerText = "";
+        });
+
+        authBtn.addEventListener('click', () => {
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value.trim();
+            const usersDB = JSON.parse(localStorage.getItem('usersDB'));
+
+            if (!userIn || !passIn) {
+                authMsg.innerText = "Please enter both fields.";
+                return;
+            }
+
+            if (isLoginMode) {
+                if (usersDB[userIn] && usersDB[userIn] === passIn) {
+                    loginSuccess(userIn);
+                } else {
+                    authMsg.innerText = "Invalid username or password.";
+                    gsap.fromTo("#auth-box", { x: -10 }, { x: 10, duration: 0.1, yoyo: true, repeat: 3, onComplete: () => gsap.set("#auth-box", {x: 0}) });
+                }
+            } else {
+                if (usersDB[userIn]) {
+                    authMsg.innerText = "Username already exists!";
+                } else {
+                    usersDB[userIn] = passIn;
+                    localStorage.setItem('usersDB', JSON.stringify(usersDB));
+                    loginSuccess(userIn);
+                }
+            }
+        });
+
+        function loginSuccess(username) {
+            currentUser = username;
+            document.getElementById('display-user').innerText = username;
+            
+            const notesDB = JSON.parse(localStorage.getItem('notesDB'));
+            notes = notesDB[username] || []; 
+            
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+            authMsg.innerText = "";
+            
+            // Hide auth screen and show dashboard
+            authView.style.display = "none";
+            dashboardView.style.display = "block";
+            renderNotes();
         }
 
-        document.getElementById('recommendation-output').innerHTML = recommendation;
-    }
-</script>
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            currentUser = null;
+            notes = [];
+            dashboardView.style.display = "none";
+            authView.style.display = "flex";
+            isLoginMode = true;
+            
+            // Turn the lamp off automatically when they log out
+            if(isOn) {
+                toggleLight();
+            }
+        });
+
+        // ==========================================
+        // 4. NOTES LOGIC (Tiles & Rendering)
+        // ==========================================
+        const notesGrid = document.getElementById('notes-grid');
+
+        function renderNotes() {
+            notesGrid.innerHTML = ""; 
+            
+            if (notes.length === 0) {
+                notesGrid.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>No notes yet. Click '+ Add Note' to create one!</p>";
+                return;
+            }
+
+            for (let i = notes.length - 1; i >= 0; i--) {
+                const note = notes[i];
+                const tile = document.createElement('div');
+                tile.className = 'note-tile';
+                tile.style.borderLeftColor = note.color;
+                
+                let preview = note.body.replace(/\n/g, "<br>");
+                
+                tile.innerHTML = `
+                    <h3 class="note-title">${note.title || "Untitled"}</h3>
+                    <div class="note-preview">${preview}</div>
+                    <div class="note-date">${note.date}</div>
+                `;
+                
+                tile.addEventListener('click', () => openModal(note.id));
+                notesGrid.appendChild(tile);
+            }
+        }
+
+        function saveNotesToStorage() {
+            const notesDB = JSON.parse(localStorage.getItem('notesDB'));
+            notesDB[currentUser] = notes;
+            localStorage.setItem('notesDB', JSON.stringify(notesDB));
+        }
+
+        // ==========================================
+        // 5. MODAL LOGIC (Create, Edit, Delete)
+        // ==========================================
+        const modal = document.getElementById('note-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const deleteBtn = document.getElementById('delete-note-btn');
+
+        const colorDots = document.querySelectorAll('.color-dot');
+        colorDots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                colorDots.forEach(d => d.classList.remove('active')); 
+                e.target.classList.add('active'); 
+                selectedColor = e.target.getAttribute('data-color');
+            });
+        });
+
+        function setModalColor(hex) {
+            selectedColor = hex;
+            colorDots.forEach(dot => {
+                if(dot.getAttribute('data-color') === hex) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function openModal(noteId = null) {
+            editingNoteId = noteId;
+            modal.style.display = "flex";
+
+            if (noteId) {
+                const noteToEdit = notes.find(n => n.id === noteId);
+                modalTitle.value = noteToEdit.title;
+                modalBody.value = noteToEdit.body;
+                setModalColor(noteToEdit.color);
+                deleteBtn.style.display = "block"; 
+            } else {
+                modalTitle.value = "";
+                modalBody.value = "";
+                setModalColor("#d4af37"); 
+                deleteBtn.style.display = "none"; 
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        document.getElementById('new-note-btn').addEventListener('click', () => openModal(null));
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+
+        document.getElementById('save-note-btn').addEventListener('click', () => {
+            const titleVal = modalTitle.value.trim();
+            const bodyVal = modalBody.value.trim();
+            
+            if (!titleVal && !bodyVal) return closeModal();
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + " " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (editingNoteId) {
+                const noteIndex = notes.findIndex(n => n.id === editingNoteId);
+                notes[noteIndex].title = titleVal;
+                notes[noteIndex].body = bodyVal;
+                notes[noteIndex].color = selectedColor;
+                notes[noteIndex].date = "Edited: " + dateStr;
+            } else {
+                const newNote = {
+                    id: Date.now().toString(),
+                    title: titleVal,
+                    body: bodyVal,
+                    color: selectedColor,
+                    date: dateStr
+                };
+                notes.push(newNote);
+            }
+
+            saveNotesToStorage();
+            renderNotes();
+            closeModal();
+        });
+
+        document.getElementById('delete-note-btn').addEventListener('click', () => {
+            if (confirm("Are you sure you want to delete this note?")) {
+                notes = notes.filter(n => n.id !== editingNoteId);
+                saveNotesToStorage();
+                renderNotes();
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
